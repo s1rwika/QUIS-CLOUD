@@ -43,7 +43,7 @@
       formData.append("file", file);
 
       try {
-        const response = await fetch("http://13.239.240.116:3000/upload", {
+        const response = await fetch("http://54.66.53.10:3000/upload", {
           method: "POST",
           body: formData
         });
@@ -60,7 +60,7 @@
     // Load files function
     async function loadFiles() {
       try {
-        const response = await fetch("http://13.239.240.116:3000/files");
+        const response = await fetch("http://54.66.53.10:3000/files");
         const files = await response.json();
         const fileList = document.getElementById('fileList');
         
