@@ -1,44 +1,92 @@
 <!DOCTYPE html>
-<html lang="id">
+<html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Blog Wika Aditya Pradani</title>
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>152022119 - Wika Aditya</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
 </head>
+
 <body class="bg-light">
-
-  <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
-    <div class="container">
-      <a class="navbar-brand" href="#">Blog Wika</a>
-    </div>
-  </nav>
-
   <div class="container mt-5">
-    <div class="text-center mb-4">
-      <h1 class="display-4">Selamat Datang di Blog Saya!</h1>
-      <p class="lead">Berikut beberapa postingan yang saya simpan di Amazon S3</p>
+    <h2 class="text-center mb-4">Wika Aditya - Blog/h2>
+    📂
+    
+    <!-- Upload Form -->
+    <div class="card p-4 shadow-sm mb-4">
+      <h4 class="mb-3">Upload File</h4>
+      <div class="input-group">
+        <input type="file" class="form-control" id="fileInput">
+        <button class="btn btn-primary" onclick="uploadFile()">Upload</button>
+      </div>
     </div>
 
-    <div class="row">
-      <!-- Postingan 1 -->
-      <div class="col-md-6">
-        <div class="card mb-4 shadow-sm">
-          <div class="card-body">
-            <h5 class="card-title">Postingan 1</h5>
-            <p class="card-text">Ini adalah postingan pertama saya yang disimpan di S3.</p>
-            <a href="https://s3-region.amazonaws.com/backup-blog-namaanda/index.html" class="btn btn-primary" target="_blank">Baca Postingan</a>
-          </div>
-        </div>
-      </div>
-
-      <!-- Tambahkan postingan lain di bawah ini jika ada -->
+    <!-- File List -->
+    <div class="card p-4 shadow-sm">
+      <h4 class="mb-3">File List</h4>
+      <ul id="fileList" class="list-group"></ul>
     </div>
   </div>
 
-  <footer class="bg-primary text-white text-center py-3 mt-5">
-    <p class="mb-0">Wika Aditya Pradani - 152022119</p>
-  </footer>
+  <script>
+    // Upload file function
+    async function uploadFile() {
+      const fileInput = document.getElementById('fileInput');
+      
+      if (!fileInput.files.length) {
+        alert("Please select a file to upload.");
+        return;
+      }
 
+      const file = fileInput.files[0];
+      const formData = new FormData();
+      formData.append("file", file);
+
+      try {
+        const response = await fetch("http://13.239.240.116:3000/upload", {
+          method: "POST",
+          body: formData
+        });
+        
+        const result = await response.json();
+        alert(result.message);
+        loadFiles();
+      } catch (error) {
+        console.error("Upload error:", error);
+        alert("Failed to upload file");
+      }
+    }
+
+    // Load files function
+    async function loadFiles() {
+      try {
+        const response = await fetch("http://13.239.240.116:3000/files");
+        const files = await response.json();
+        const fileList = document.getElementById('fileList');
+        
+        fileList.innerHTML = "";
+        
+        files.forEach(file => {
+          const li = document.createElement("li");
+          li.className = "list-group-item d-flex justify-content-between align-items-center";
+          li.innerHTML = `
+            <a href="${file.url}" target="_blank" class="text-decoration-none">
+              ${file.fileName}
+            </a>
+          `;
+          fileList.appendChild(li);
+        });
+      } catch (error) {
+        console.error("Error loading files:", error);
+      }
+    }
+
+    // Initial load
+    document.addEventListener('DOMContentLoaded', () => {
+      loadFiles();
+    });
+  </script>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
